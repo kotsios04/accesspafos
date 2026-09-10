@@ -1009,3 +1009,25 @@ table.data .cell-muted { color: var(--muted); }
   .street-photo__skeleton { animation: none; }
   .street-lightbox { transition: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   Street suggestions
+   ---------------------------------------------------------------------------
+   Drawn directly under the input rather than in a floating layer. A dropdown
+   that overlays the page has to fight the on-screen keyboard on a phone, and
+   loses: it ends up either behind the keyboard or covering the field the
+   person is still typing into. Pushing the form down is less clever and works.
+*/
+
+.place-suggest:not(:empty) {
+  margin-top: 6px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.list-item--sm { padding: 8px 10px; gap: 8px; }
+.list-item--sm .list-item__title { font-size: var(--text-sm); }
+.list-item--sm .list-item__meta { font-size: var(--text-xs); }

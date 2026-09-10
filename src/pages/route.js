@@ -1,13 +1,18 @@
 /**
  * Route planner.
  *
- * Search is on explicit submit, never per keystroke: Nominatim's usage policy
- * forbids autocomplete against the public instance, and honouring that is
- * part of using open data responsibly rather than just consuming it.
+ * Geocoder search is on explicit submit, never per keystroke: Nominatim's usage
+ * policy forbids autocomplete against the public instance, and honouring that
+ * is part of using open data responsibly rather than just consuming it.
+ *
+ * Suggestions as you type come from somewhere else entirely - the published
+ * bundle already sitting in the browser, which carries every street name in the
+ * region. Local, instant, no request made, and it can only offer streets the
+ * app actually has data about. See services/places.js.
  */
 
 import { el, mount, on } from '../utils/dom.js';
-import { t } from '../i18n/index.js';
+import { t, getLocale } from '../i18n/index.js';
 
 /**
  * How each mobility profile is dressed in the option list.
@@ -27,6 +32,7 @@ import { setHeader, getOutlet } from '../components/appShell.js';
 import { icon } from '../components/icons.js';
 import { button, radioOption, toggle, field, banner, sectionTitle } from '../components/ui.js';
 import { searchPlace, calculateRoute } from '../services/api.js';
+import { suggestStreets } from '../services/places.js';
 import { getCurrentPosition } from '../services/geolocate.js';
 import { getPrefs, setPrefs } from '../services/prefs.js';
 import { toastError } from '../services/toast.js';
@@ -189,6 +195,7 @@ function placePicker({ id, label, placeholder, allowCurrentLocation = false, onP
     id, type: 'search', placeholder, autocomplete: 'off', enterkeyhint: 'search'
   });
   const results = el('div.stack-sm', { style: { marginTop: '8px' }, role: 'listbox' });
+  const suggestions = el('div.stack-sm.place-suggest', { role: 'listbox' });
   const chosen = el('p.small.muted', { hidden: true });
 
   const searchBtn = el('button.btn.btn--secondary.btn--sm', { type: 'button' }, [icon('search', 15), t('app.search')]);
@@ -199,10 +206,35 @@ function placePicker({ id, label, placeholder, allowCurrentLocation = false, onP
   const node = el('div.field', {}, [
     el('label.field__label', { for: id }, label),
     input,
+    suggestions,
     el('div.row', { style: { marginTop: '8px', gap: '8px' } }, [searchBtn, locateBtn].filter(Boolean)),
     chosen,
     results
   ]);
+
+  /**
+   * Redraw the local suggestions. No network, so this runs on every keystroke
+   * without a debounce: the work is a scan of a few thousand names already in
+   * memory, and delaying it would only make the list feel slower than it is.
+   */
+  function renderSuggestions() {
+    const matches = suggestStreets(input.value, { locale: getLocale() });
+    if (!matches.length) { mount(suggestions); return; }
+
+    mount(suggestions, matches.map((place) => el('button.list-item.list-item--sm', {
+      type: 'button',
+      role: 'option',
+      onClick: () => { pick(place); mount(suggestions); }
+    }, [
+      icon('route', 15),
+      el('div', {}, [
+        el('div.list-item__title', {}, place.name),
+        place.displayName && place.displayName !== place.name
+          ? el('div.list-item__meta', {}, place.displayName)
+          : null
+      ])
+    ])));
+  }
 
   async function search() {
     const value = input.value.trim();
@@ -211,7 +243,7 @@ function placePicker({ id, label, placeholder, allowCurrentLocation = false, onP
     try {
       const response = await searchPlace(value);
       if (!response.results?.length) {
-        mount(results, el('p.small.muted', {}, t('map.noResults')));
+        mount(results, el('p.small.muted', {}, t('route.noPlaces')));
         return;
       }
       mount(results, response.results.slice(0, 5).map((place) => el('button.list-item', {
@@ -250,9 +282,11 @@ function placePicker({ id, label, placeholder, allowCurrentLocation = false, onP
     }
   }
 
-  const offSearch = on(searchBtn, 'click', search);
+  const offInput = on(input, 'input', renderSuggestions);
+  const offSearch = on(searchBtn, 'click', () => { mount(suggestions); search(); });
   const offEnter = on(input, 'keydown', (event) => {
-    if (event.key === 'Enter') { event.preventDefault(); search(); }
+    if (event.key === 'Enter') { event.preventDefault(); mount(suggestions); search(); }
+    if (event.key === 'Escape') mount(suggestions);
   });
   const offLocate = locateBtn ? on(locateBtn, 'click', useLocation) : () => {};
 
@@ -262,6 +296,6 @@ function placePicker({ id, label, placeholder, allowCurrentLocation = false, onP
     focus: () => input.focus(),
     setQuery: (value) => { input.value = value; },
     setLabel: (value) => { chosen.hidden = false; chosen.textContent = value; },
-    destroy() { offSearch(); offEnter(); offLocate(); }
+    destroy() { offInput(); offSearch(); offEnter(); offLocate(); }
   };
 }

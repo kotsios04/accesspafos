@@ -174,6 +174,7 @@ export default {
     originPlaceholder: 'Your location, or search',
     destinationPlaceholder: 'Search a destination',
     useMyLocation: 'Use my location',
+    noPlaces: 'No place found by that name. Try fewer words, or a nearby street.',
     dropPin: 'Drop a pin on the map',
     profile: 'Mobility profile',
     preferVerified: 'Prefer verified data',
