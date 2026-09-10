@@ -38,7 +38,19 @@ jobs:
           VITE_FIREBASE_STORAGE_BUCKET: ci.appspot.com
           VITE_FIREBASE_APP_ID: 1:0:web:0
 
+      # The Firestore emulator is a Java process, and firebase-tools 15
+      # requires a JDK 21 or newer. The runner's default JDK is older, so the
+      # emulator refuses to start without this.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # Runs `firebase emulators:exec` through the firebase-tools pinned in
+      # devDependencies rather than a global `npm install -g firebase-tools`:
+      # CI then uses the same version as local development, and a new major
+      # release cannot break the build on its own. The script also carries the
+      # project id the rules tests connect with - firebase.json enables
+      # emulators.singleProjectMode, so the two have to agree.
       - name: Security rules tests
-        run: |
-          npm install -g firebase-tools
-          firebase emulators:exec --only firestore --project ci "npx vitest run --project rules"
+        run: npm run test:rules:emulator
