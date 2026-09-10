@@ -38,7 +38,7 @@ function stops(expression) {
 }
 
 describe('accessibility layer paint', () => {
-  it('adds one source and the five layers the map interacts with', () => {
+  it('adds one source and the six layers the map interacts with', () => {
     const map = fakeMap();
     addAccessibilityLayer(map, EMPTY);
 
@@ -47,6 +47,7 @@ describe('accessibility layer paint', () => {
       'accessibility-base',
       'accessibility-line',
       'accessibility-unknown',
+      'accessibility-simulated',
       'accessibility-selected',
       'accessibility-hitbox'
     ]);
