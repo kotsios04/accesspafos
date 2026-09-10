@@ -64,7 +64,9 @@ Every accessibility claim is traceable to evidence. Tap any street and you get:
 - the **age** of the newest evidence;
 - which **sources** contributed (OSM tags, which photographs, which reports);
 - the individual **image findings**;
-- links to the original **Mapillary photograph** and **OpenStreetMap way**;
+- the **photograph the model judged**, shown inline beside its findings, with
+  photographer and capture date, plus links to it on Mapillary and to the
+  **OpenStreetMap way**;
 - the **verification history**, including any municipal override.
 
 The AI never produces the score. It extracts structured observations from
@@ -129,6 +131,12 @@ cp .env.example .env      # then fill in the Firebase web config
 npm run dev               # http://localhost:5173
 ```
 
+`.env.example` lists every variable. One is easy to miss: `VITE_MAPILLARY_TOKEN`
+is the same Mapillary token as the server-side one, exposed to the browser so the
+segment detail can show the photograph an assessment was based on. Vite inlines
+it **at build time**, so it has to be present before `npm run build`, not merely
+before the server starts.
+
 The app runs without any secrets. Without a Mapillary token and a Gemini key it
 simply cannot discover imagery or analyse it — everything else, including OSM
 ingestion, scoring, routing and reporting, works. The console shows a clear
@@ -148,7 +156,7 @@ npm run dev
 ### Tests
 
 ```bash
-npm test                    # 337 tests — unit, integration and component — with no network
+npm test                    # unit, integration and component — no network required
 npm run test:rules          # security rules (needs the Firestore emulator)
 npm run evaluate            # ground-truth metrics from labelled samples
 ```
@@ -188,8 +196,13 @@ firebase functions:secrets:set MAPILLARY_ACCESS_TOKEN
 firebase functions:secrets:set GEMINI_API_KEY
 
 npm run build
-firebase deploy
+node scripts/deploy.mjs
 ```
+
+`scripts/deploy.mjs` is `firebase deploy` with `FUNCTIONS_DISCOVERY_TIMEOUT`
+raised. The CLI gives itself ten seconds to load the function graph, and this
+one exceeds it on a cold machine — the wrapper exists so that a deploy fails for
+real reasons rather than for that one.
 
 Step-by-step, including Firestore location and the first admin:
 [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
@@ -199,14 +212,21 @@ Step-by-step, including Firestore location and the first admin:
 ## Cost control
 
 This is a student project on a personal Google Cloud account, and the design
-takes that seriously. AI spend is bounded at four independent levels:
+takes that seriously. AI spend is bounded at five independent levels:
 
-1. **Per segment** — at most 3 well-chosen frames, never a whole sequence.
-2. **Per job** — `MAX_AI_ANALYSES_PER_JOB`.
-3. **Per day** — `MAX_AI_ANALYSES_PER_DAY`, enforced by a transactional
+1. **Before the model at all** — a segment whose OSM tags already settle the
+   question never reaches it. Steps, an explicit `wheelchair` tag, a driveway,
+   a motorway: a mapper standing on the street already answered, and a
+   photograph cannot improve on that.
+2. **Per segment** — the single best-matched frame is analysed, not the whole
+   selection. A second is spent only when the first reading comes back poor,
+   obstructed or uncertain. On a real region this is where most of the saving
+   is: over two thirds of selected frames are never sent.
+3. **Per job** — `MAX_AI_ANALYSES_PER_JOB`.
+4. **Per day** — `MAX_AI_ANALYSES_PER_DAY`, enforced by a transactional
    Firestore ledger rather than an in-memory counter (Cloud Functions scale
    out; an in-memory counter is no limit at all).
-4. **Per image** — a deduplication key over source, model and analysis version,
+5. **Per image** — a deduplication key over source, model and analysis version,
    so identical evidence is never paid for twice.
 
 Bulk analysis never starts automatically. See [`docs/COST_CONTROL.md`](docs/COST_CONTROL.md).
