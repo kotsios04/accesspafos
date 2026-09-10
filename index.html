@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>AccessPafos AI — The AI Accessibility Layer for Pafos</title>
+  <meta name="description" content="Plan pedestrian routes in Pafos by accessibility, not just distance. Evidence-backed accessibility intelligence built from OpenStreetMap, street-level imagery and AI analysis." />
+  <meta name="theme-color" content="#176B87" />
+  <meta name="color-scheme" content="light" />
+
+  <meta property="og:title" content="AccessPafos AI" />
+  <meta property="og:description" content="The AI Accessibility Layer for Pafos. Routes chosen for accessibility, with the evidence behind every claim." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en" />
+  <meta property="og:locale:alternate" content="el" />
+  <meta property="og:site_name" content="AccessPafos AI" />
+  <meta property="og:url" content="https://access-pafos.web.app/" />
+
+  <!-- Link previews. The URL has to be absolute: Facebook, WhatsApp and
+       LinkedIn all refuse a relative one, and a preview that silently falls
+       back to no image is the failure mode nobody notices until the link is
+       already shared. 1200x630 is what every platform crops toward, and the
+       declared dimensions let a scraper reserve the space before the file
+       arrives. -->
+  <meta property="og:image" content="https://access-pafos.web.app/og-image.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="AccessPafos AI — the AI accessibility layer for Pafos, above Pafos harbour and castle" />
+
+  <!-- The one tag X does not inherit from Open Graph. Without it the banner is
+       shown as a small square thumbnail instead of the full-width card; title,
+       description and image all fall back to the og: values above. -->
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <!-- PNGs rather than an SVG: the brand mark is a raster asset, and the
+       placeholder SVG that used to be here drew a different logo entirely.
+       Sizes are given so the browser picks per display rather than scaling a
+       32px tile up on a retina tab strip. -->
+  <link rel="icon" href="/icons/icon-32.png" sizes="32x32" type="image/png" />
+  <link rel="icon" href="/icons/icon-16.png" sizes="16x16" type="image/png" />
+  <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
+  <!-- Caveat carries one accent word on the home screen. It is loaded with the
+       body font in a single request, and every string it renders also exists in
+       the sans stack: if the font never arrives, nothing becomes unreadable. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div id="app">
+    <!-- First paint before JavaScript boots. Replaced by the app shell. -->
+    <div class="spinner-center" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <span class="sr-only">Loading AccessPafos</span>
+    </div>
+  </div>
+
+  <div id="sheet-root"></div>
+  <div id="toast-root" class="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
+  <!-- Announcements for screen readers that must not steal focus. -->
+  <div id="live-region" class="sr-only" role="status" aria-live="polite"></div>
+
+  <noscript>
+    <div style="padding:2rem;max-width:40rem;margin:0 auto;font-family:system-ui,sans-serif">
+      <h1>AccessPafos AI</h1>
+      <p>This application needs JavaScript to display the accessibility map and calculate routes.</p>
+      <p>If you cannot enable JavaScript and need accessibility information about a route in Pafos,
+         please contact the Municipality of Pafos directly.</p>
+    </div>
+  </noscript>
+
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>

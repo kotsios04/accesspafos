@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://accesspafos.example/evaluation/labelled-sample.schema.json",
+  "title": "AccessPafos labelled validation sample",
+  "description": "A human ground-truth label for one pedestrian segment, paired with the system's belief at the moment of labelling.",
+  "type": "object",
+  "required": ["segmentId", "trueStatus", "predictedStatus"],
+  "additionalProperties": true,
+  "properties": {
+    "segmentId": { "type": "string" },
+    "regionId": { "type": "string" },
+
+    "trueStatus": {
+      "description": "What a human found to be actually true. 'unverified' is not a valid ground truth: a person standing on the pavement always knows.",
+      "enum": ["accessible", "partial", "inaccessible"]
+    },
+    "trueBarriers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Barrier identifiers actually present, from the shared vocabulary."
+    },
+
+    "predictedStatus": {
+      "description": "What the system said at the moment of labelling. 'unverified' means it declined to classify.",
+      "enum": ["accessible", "partial", "inaccessible", "unverified"]
+    },
+    "predictedScore": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+    "predictedConfidence": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+    "predictedBarriers": { "type": "array", "items": { "type": "string" } },
+
+    "assessmentVersion": {
+      "type": ["string", "null"],
+      "description": "Which version of the scoring engine produced the prediction. Metrics from different versions must not be pooled."
+    },
+    "labelledBy": { "type": "string" },
+    "notes": { "type": "string", "maxLength": 600 },
+    "createdAt": { "type": ["string", "number", "null"] }
+  }
+}

@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: |
+          npm ci
+          npm --prefix functions ci
+
+      - name: Parse every Cloud Function module
+        run: npm --prefix functions run build
+
+      - name: Unit and integration tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+        env:
+          # Placeholders: the build must succeed without real credentials, and
+          # these values never reach a deployed artefact.
+          VITE_FIREBASE_API_KEY: ci-placeholder
+          VITE_FIREBASE_AUTH_DOMAIN: ci.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: ci
+          VITE_FIREBASE_STORAGE_BUCKET: ci.appspot.com
+          VITE_FIREBASE_APP_ID: 1:0:web:0
+
+      - name: Security rules tests
+        run: |
+          npm install -g firebase-tools
+          firebase emulators:exec --only firestore --project ci "npx vitest run --project rules"

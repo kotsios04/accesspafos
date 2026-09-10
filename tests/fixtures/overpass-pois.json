@@ -1,0 +1,12 @@
+{
+  "version": 0.6,
+  "generator": "AccessPafos test fixture (hand-written, not a real Overpass response)",
+  "elements": [
+    { "type": "node", "id": 900, "lat": 34.75695, "lon": 32.41870, "tags": { "amenity": "hospital", "name": "Pafos General (fixture)" } },
+    { "type": "node", "id": 901, "lat": 34.75665, "lon": 32.41835, "tags": { "highway": "bus_stop", "name": "Harbour stop (fixture)" } },
+    { "type": "node", "id": 902, "lat": 34.75720, "lon": 32.41900, "tags": { "amenity": "school", "name": "Primary school (fixture)" } },
+    { "type": "node", "id": 903, "lat": 34.75600, "lon": 32.41600, "tags": { "amenity": "bar", "name": "Not a public service" } },
+    { "type": "way",  "id": 904, "center": { "lat": 34.75800, "lon": 32.42000 }, "tags": { "amenity": "townhall", "name": "Town hall (fixture)" } },
+    { "type": "node", "id": 905, "lat": 34.79000, "lon": 32.45000, "tags": { "amenity": "pharmacy", "name": "Far away pharmacy (fixture)" } }
+  ]
+}

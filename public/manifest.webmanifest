@@ -1,0 +1,58 @@
+{
+  "name": "AccessPafos AI",
+  "short_name": "AccessPafos",
+  "description": "The AI accessibility layer for Pafos. Plan pedestrian routes by accessibility, not just distance.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F5F7F6",
+  "theme_color": "#176B87",
+  "categories": [
+    "navigation",
+    "travel",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Accessibility map",
+      "short_name": "Map",
+      "url": "/map",
+      "description": "Explore colour-coded pedestrian accessibility in Pafos"
+    },
+    {
+      "name": "Plan an accessible route",
+      "short_name": "Route",
+      "url": "/route",
+      "description": "Find a route chosen for accessibility"
+    },
+    {
+      "name": "Report a barrier",
+      "short_name": "Report",
+      "url": "/report",
+      "description": "Tell the municipality about an obstruction"
+    }
+  ]
+}

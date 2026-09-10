@@ -1,0 +1,19 @@
+{
+  "_comment": "FIXTURE DATA — hand-written for testing the harness. These are NOT real measurements of the deployed system and must never be quoted as accuracy figures. Real labels come from /admin/validation.",
+  "regionId": "fixture-region",
+  "assessmentVersion": "1.0.0",
+  "samples": [
+    { "segmentId": "f-01", "trueStatus": "accessible",   "trueBarriers": [],                                    "predictedStatus": "accessible",   "predictedScore": 92, "predictedConfidence": 71, "predictedBarriers": [] },
+    { "segmentId": "f-02", "trueStatus": "accessible",   "trueBarriers": [],                                    "predictedStatus": "accessible",   "predictedScore": 88, "predictedConfidence": 66, "predictedBarriers": [] },
+    { "segmentId": "f-03", "trueStatus": "partial",      "trueBarriers": ["uneven_surface"],                    "predictedStatus": "partial",      "predictedScore": 68, "predictedConfidence": 58, "predictedBarriers": ["uneven_surface"] },
+    { "segmentId": "f-04", "trueStatus": "partial",      "trueBarriers": ["narrow_width"],                      "predictedStatus": "accessible",   "predictedScore": 81, "predictedConfidence": 52, "predictedBarriers": [] },
+    { "segmentId": "f-05", "trueStatus": "inaccessible", "trueBarriers": ["steps"],                             "predictedStatus": "inaccessible", "predictedScore": 18, "predictedConfidence": 78, "predictedBarriers": ["steps"] },
+    { "segmentId": "f-06", "trueStatus": "inaccessible", "trueBarriers": ["missing_curb_ramp"],                 "predictedStatus": "partial",      "predictedScore": 61, "predictedConfidence": 55, "predictedBarriers": ["missing_curb_ramp"] },
+    { "segmentId": "f-07", "trueStatus": "accessible",   "trueBarriers": [],                                    "predictedStatus": "unverified",   "predictedScore": null, "predictedConfidence": 22, "predictedBarriers": [] },
+    { "segmentId": "f-08", "trueStatus": "inaccessible", "trueBarriers": ["blocking_obstacle"],                 "predictedStatus": "inaccessible", "predictedScore": 34, "predictedConfidence": 64, "predictedBarriers": ["blocking_obstacle"] },
+    { "segmentId": "f-09", "trueStatus": "partial",      "trueBarriers": ["damaged_surface", "narrow_width"],   "predictedStatus": "partial",      "predictedScore": 57, "predictedConfidence": 60, "predictedBarriers": ["damaged_surface"] },
+    { "segmentId": "f-10", "trueStatus": "accessible",   "trueBarriers": [],                                    "predictedStatus": "partial",      "predictedScore": 74, "predictedConfidence": 57, "predictedBarriers": ["uneven_surface"] },
+    { "segmentId": "f-11", "trueStatus": "inaccessible", "trueBarriers": ["steps"],                             "predictedStatus": "inaccessible", "predictedScore": 18, "predictedConfidence": 74, "predictedBarriers": ["steps"] },
+    { "segmentId": "f-12", "trueStatus": "partial",      "trueBarriers": ["missing_curb_ramp"],                 "predictedStatus": "unverified",   "predictedScore": null, "predictedConfidence": 31, "predictedBarriers": [] }
+  ]
+}

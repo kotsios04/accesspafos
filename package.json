@@ -1,0 +1,54 @@
+{
+  "name": "accesspafos-ai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "AccessPafos AI - the AI accessibility layer for Pafos. Turns existing OSM + street-level imagery into an evidence-traceable, routable pedestrian accessibility layer.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run sync:shared && vite build",
+    "preview": "vite preview --port 4173",
+    "test": "vitest run --project unit --project integration --project components",
+    "test:watch": "vitest",
+    "test:rules": "vitest run --project rules",
+    "test:rules:emulator": "firebase emulators:exec --only firestore --project accesspafos-rules-test \"vitest run --project rules\"",
+    "test:all": "vitest run",
+    "coverage": "vitest run --coverage",
+    "sync:shared": "node scripts/sync-shared.mjs",
+    "postinstall": "node scripts/sync-shared.mjs",
+    "icons": "node scripts/make-icons.mjs",
+    "emulators": "firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data",
+    "emulators:clean": "firebase emulators:start",
+    "set-admin": "node scripts/set-admin.js",
+    "import-region": "node scripts/import-region.js",
+    "imagery": "node scripts/imagery.js",
+    "seed:dev": "node scripts/seed-dev.js",
+    "evaluate": "node evaluation/scripts/evaluate.mjs",
+    "deploy": "npm run build && node scripts/deploy.mjs",
+    "deploy:hosting": "npm run build && node scripts/deploy.mjs --only hosting",
+    "deploy:functions": "node scripts/deploy.mjs --only functions",
+    "deploy:rules": "node scripts/deploy.mjs --only firestore:rules,firestore:indexes,storage"
+  },
+  "dependencies": {
+    "@turf/along": "^7.4.0",
+    "@turf/distance": "^7.4.0",
+    "@turf/helpers": "^7.4.0",
+    "@turf/length": "^7.4.0",
+    "@turf/nearest-point-on-line": "^7.4.0",
+    "firebase": "^12.18.0",
+    "maplibre-gl": "^6.8.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@vitest/coverage-v8": "^5.0.0",
+    "firebase-admin": "^14.3.0",
+    "firebase-tools": "^14.24.1",
+    "happy-dom": "^20.0.0",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
+  }
+}

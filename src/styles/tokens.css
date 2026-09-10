@@ -1,0 +1,174 @@
+/* ==========================================================================
+   AccessPafos AI - design tokens
+
+   The ground is coastal sky, not office grey: a soft blue wash that white
+   cards sit on top of, the way the reference screens do. Two consequences
+   worth stating, because they drive most of the rules below:
+
+   1. White stops being the background and becomes the CARD colour. Anything
+      that needs to read as a surface has to be explicitly white; a component
+      that leaves its background unset now shows sky through it.
+   2. Shadows are tinted with the ground's own blue rather than neutral grey.
+      A grey shadow over a blue wash reads as dirt.
+
+   Primary actions stay the deep civic teal. Status colours are unchanged -
+   they carry meaning, and meaning does not get restyled for a new look.
+   ========================================================================== */
+
+:root {
+  /* --- ink & surface -------------------------------------------------- */
+  --ink: #0F2B3C;
+  --ink-2: #2F4A5C;
+  --muted: #5F7A8C;
+  --muted-2: #8CA6B6;
+  --surface: #FFFFFF;
+  --surface-alt: #E9F4FB;
+  --surface-sunk: #DCEDF7;
+  --border: #DCEAF3;
+  --border-strong: #BFD9E9;
+
+  /* --- the sky ground ------------------------------------------------- */
+  --sky-top: #CDE9F7;
+  --sky-mid: #E6F4FC;
+  --sky-low: #F3FAFD;
+  /* The hairline that keeps a white card from dissolving into the wash. */
+  --card-edge: rgba(120, 176, 205, 0.22);
+
+  /* --- brand: deep civic teal, for primary actions ------------------- */
+  --brand: #146B87;
+  --brand-dark: #0E566F;
+  --brand-darker: #0A4257;
+  --brand-soft: #E8F4F8;
+  --brand-tint: #CFE7EF;
+
+  /* --- accent: brighter blue, reserved for AI / scan / info ---------- */
+  --accent: #1E88C7;
+  --accent-dark: #1670A8;
+  --accent-soft: #E4F1FB;
+  --accent-tint: #C4E0F5;
+
+  /* --- accessibility status ------------------------------------------ */
+  --accessible: #1FA463;
+  --accessible-soft: #E3F6EC;
+  --partial: #F2A93B;
+  --partial-soft: #FDF1DF;
+  --inaccessible: #E14B4B;
+  --inaccessible-soft: #FCEAEA;
+  --unknown: #9FB0BF;
+  --unknown-soft: #EEF2F6;
+
+  /* Darker tones for the same statuses when they must read as text. */
+  --accessible-ink: #16794A;
+  --partial-ink: #8A5B0F;
+  --inaccessible-ink: #B03434;
+  --unknown-ink: #55697A;
+
+  /* --- typography ---------------------------------------------------- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+               'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-script: 'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.125rem;
+
+  --leading-tight: 1.18;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* --- spacing (4px rhythm) ------------------------------------------ */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.25rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-10: 2.5rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+
+  /* --- radii & depth -------------------------------------------------- */
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 20px;
+  --r-xl: 26px;
+  --r-2xl: 32px;
+  --r-full: 999px;
+
+  /* Tinted with the ground's blue, and softer: on a pale wash a hard grey
+     shadow reads as a smudge rather than as depth. */
+  --shadow-xs: 0 1px 2px rgba(21, 79, 108, 0.05);
+  --shadow-sm: 0 4px 16px rgba(21, 79, 108, 0.08);
+  --shadow-md: 0 10px 30px rgba(21, 79, 108, 0.10);
+  --shadow-lg: 0 20px 48px rgba(21, 79, 108, 0.15);
+  --shadow-sheet: 0 -12px 40px rgba(21, 79, 108, 0.14);
+  --shadow-fab: 0 8px 22px rgba(30, 136, 199, 0.38);
+
+  /* --- layout --------------------------------------------------------- */
+  --nav-height: 66px;
+  --header-height: 60px;
+  --content-max: 760px;
+  --admin-sidebar: 248px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  /* --- motion --------------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --dur-slow: 340ms;
+
+  --focus-ring: 0 0 0 3px rgba(30, 136, 199, 0.35);
+  /* Stacking order, in one place.
+     These were scattered as bare numbers across three stylesheets and had
+     drifted out of order: the admin sidebar sat at 80 and the sheet at 61, so
+     a modal dialog opened *underneath* the navigation. That is not only ugly -
+     the sheet sets aria-modal and traps focus, telling assistive technology
+     the rest of the page is inert, while a sidebar remained visibly on top of
+     it and still clickable. The contract and the pixels disagreed.
+     Anything new belongs on this ladder, not on a number picked to win. */
+  --z-sticky: 1;          /* sticky table headers */
+  --z-topbar: 50;         /* admin top bar */
+  --z-drawer-scrim: 60;   /* dim behind the mobile admin drawer */
+  --z-drawer: 61;         /* the drawer itself */
+  --z-backdrop: 70;       /* modal backdrop - above all page chrome */
+  --z-modal: 71;          /* bottom sheets and dialogs */
+  --z-lightbox: 80;       /* enlarged photo, opened from inside a sheet */
+  --z-toast: 90;          /* confirmations and errors: always visible */
+
+  color-scheme: light;
+}
+
+/* Animation is decoration here; nothing depends on it. */
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur: 0ms; --dur-slow: 0ms; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --muted: #46596B;
+    --border: #B6C6D4;
+    --border-strong: #8598A8;
+  }
+}

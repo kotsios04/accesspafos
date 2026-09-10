@@ -1,0 +1,109 @@
+{
+  "_comment": "Simulated model outputs, including outputs a well-behaved model should never produce. Used to test that the pipeline degrades safely rather than trusting whatever it is handed.",
+
+  "clean": {
+    "imageQuality": "good",
+    "pedestrianPath": { "visible": "yes", "condition": "clear" },
+    "curbRamp": { "visible": "yes", "condition": "usable" },
+    "stairs": { "visible": "no" },
+    "surface": { "type": "paved", "condition": "good" },
+    "obstacle": { "visible": "no", "severity": "none", "description": "" },
+    "crossing": { "visible": "yes", "accessibleFeatures": ["marked_crossing", "dropped_kerb"] },
+    "clearPassage": { "classification": "clear" },
+    "uncertainFindings": [],
+    "notes": "Wide asphalt pavement with a dropped kerb at the crossing."
+  },
+
+  "blocked": {
+    "imageQuality": "good",
+    "pedestrianPath": { "visible": "yes", "condition": "blocked" },
+    "curbRamp": { "visible": "no", "condition": "unknown" },
+    "stairs": { "visible": "no" },
+    "surface": { "type": "paving_stones", "condition": "damaged" },
+    "obstacle": { "visible": "yes", "severity": "blocking", "description": "parked scooters across the pavement" },
+    "crossing": { "visible": "not_visible", "accessibleFeatures": [] },
+    "clearPassage": { "classification": "blocked" },
+    "uncertainFindings": ["cannot see whether there is a way round on the far side"],
+    "notes": "Pavement fully obstructed."
+  },
+
+  "sawNothing": {
+    "imageQuality": "poor",
+    "pedestrianPath": { "visible": "not_visible", "condition": "unknown" },
+    "curbRamp": { "visible": "not_visible", "condition": "unknown" },
+    "stairs": { "visible": "not_visible" },
+    "surface": { "type": "unknown", "condition": "unknown" },
+    "obstacle": { "visible": "unknown", "severity": "unknown", "description": "" },
+    "crossing": { "visible": "not_visible", "accessibleFeatures": [] },
+    "clearPassage": { "classification": "unknown" },
+    "uncertainFindings": ["image is very dark"],
+    "notes": "Night-time frame, nothing legible."
+  },
+
+  "inventedValues": {
+    "imageQuality": "excellent",
+    "pedestrianPath": { "visible": "probably", "condition": "mostly clear" },
+    "curbRamp": { "visible": "sort of", "condition": "fine" },
+    "stairs": { "visible": "a few" },
+    "surface": { "type": "marble", "condition": "pristine" },
+    "obstacle": { "visible": "maybe", "severity": "smallish", "description": "a thing" },
+    "crossing": { "visible": "yes", "accessibleFeatures": ["teleporter", "escalator"] },
+    "clearPassage": { "classification": "fine" },
+    "uncertainFindings": "not an array",
+    "notes": "Model ignored the vocabulary."
+  },
+
+  "partial": {
+    "imageQuality": "medium",
+    "surface": { "type": "paved", "condition": "good" }
+  },
+
+  "prose": "The pavement looks generally accessible, with a gentle slope and a dropped kerb at the corner.",
+
+  "withScore": {
+    "imageQuality": "good",
+    "accessibilityScore": 95,
+    "score": 95,
+    "rating": "fully accessible",
+    "recommendation": "suitable for wheelchair users",
+    "pedestrianPath": { "visible": "yes", "condition": "clear" },
+    "curbRamp": { "visible": "unknown", "condition": "unknown" },
+    "stairs": { "visible": "unknown" },
+    "surface": { "type": "unknown", "condition": "unknown" },
+    "obstacle": { "visible": "unknown", "severity": "unknown", "description": "" },
+    "crossing": { "visible": "unknown", "accessibleFeatures": [] },
+    "clearPassage": { "classification": "unknown" },
+    "uncertainFindings": [],
+    "notes": "Model tried to grade the segment itself."
+  },
+
+  "describesPeople": {
+    "imageQuality": "good",
+    "people": ["an elderly man with a stick", "two pedestrians observed waiting"],
+    "pedestrianPath": { "visible": "yes", "condition": "clear" },
+    "curbRamp": { "visible": "yes", "condition": "usable" },
+    "stairs": { "visible": "no" },
+    "surface": { "type": "paved", "condition": "good" },
+    "obstacle": { "visible": "no", "severity": "none", "description": "" },
+    "crossing": { "visible": "no", "accessibleFeatures": [] },
+    "clearPassage": { "classification": "clear" },
+    "uncertainFindings": [],
+    "notes": "Clear pavement."
+  },
+
+  "verbose": {
+    "imageQuality": "medium",
+    "pedestrianPath": { "visible": "yes", "condition": "restricted" },
+    "curbRamp": { "visible": "unknown", "condition": "unknown" },
+    "stairs": { "visible": "no" },
+    "surface": { "type": "paving_stones", "condition": "uneven" },
+    "obstacle": {
+      "visible": "yes", "severity": "moderate",
+      "description": "There is what appears to be a considerable quantity of assorted street furniture including but not limited to bollards, an advertising board, a bicycle rack and several planters arranged along the kerb line which collectively narrow the available walking width quite substantially in this particular view."
+    },
+    "crossing": { "visible": "no", "accessibleFeatures": [] },
+    "clearPassage": { "classification": "restricted" },
+    "uncertainFindings": [],
+    "notes": "This is a long note that goes on and on describing the scene in considerable and largely irrelevant detail, mentioning the weather, the colour of the buildings, the time of day, the make of the vehicles parked nearby, and a number of other observations that have no bearing whatsoever on whether a person using a wheelchair could get along this pavement, which is the only question that was actually asked."
+  }
+}

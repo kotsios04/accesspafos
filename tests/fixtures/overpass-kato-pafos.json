@@ -1,0 +1,55 @@
+{
+  "version": 0.6,
+  "generator": "AccessPafos test fixture (hand-written, not a real Overpass response)",
+  "elements": [
+    { "type": "node", "id": 1, "lat": 34.7565, "lon": 32.4160 },
+    { "type": "node", "id": 2, "lat": 34.7568, "lon": 32.4185 },
+    { "type": "node", "id": 3, "lat": 34.7570, "lon": 32.4210 },
+    { "type": "node", "id": 4, "lat": 34.7582, "lon": 32.4218 },
+    { "type": "node", "id": 5, "lat": 34.7592, "lon": 32.4235 },
+    { "type": "node", "id": 6, "lat": 34.7590, "lon": 32.4188 },
+    { "type": "node", "id": 7, "lat": 34.7558, "lon": 32.4230 },
+    { "type": "node", "id": 8, "lat": 34.7575, "lon": 32.4250 },
+
+    {
+      "type": "way", "id": 100, "version": 9, "timestamp": "2025-04-18T08:12:00Z",
+      "nodes": [1, 2, 3],
+      "tags": {
+        "highway": "footway", "footway": "sidewalk",
+        "name": "Poseidonos Avenue", "name:el": "Λεωφόρος Ποσειδώνος",
+        "surface": "asphalt", "smoothness": "good", "width": "2.4",
+        "kerb": "lowered", "tactile_paving": "yes",
+        "postal_code": "8042", "source": "survey"
+      }
+    },
+    {
+      "type": "way", "id": 101, "version": 3, "timestamp": "2023-11-02T14:30:00Z",
+      "nodes": [3, 4, 5],
+      "tags": { "highway": "steps", "name": "Harbour Steps", "step_count": "22", "handrail": "yes" }
+    },
+    {
+      "type": "way", "id": 106, "version": 5, "timestamp": "2025-06-01T10:05:00Z",
+      "nodes": [3, 7, 8, 5],
+      "tags": {
+        "highway": "footway", "name": "Harbour Ramp",
+        "surface": "concrete", "smoothness": "good", "width": "2.0",
+        "kerb": "flush", "incline": "4%", "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "way", "id": 104, "version": 1, "timestamp": "2019-02-11T09:00:00Z",
+      "nodes": [2, 6],
+      "tags": { "highway": "footway" }
+    },
+    {
+      "type": "way", "id": 102, "version": 2, "timestamp": "2024-01-05T09:00:00Z",
+      "nodes": [1, 6],
+      "tags": { "highway": "residential", "name": "Agiou Antoniou", "sidewalk": "separate" }
+    },
+    {
+      "type": "way", "id": 105, "version": 4, "timestamp": "2024-03-03T09:00:00Z",
+      "nodes": [1, 5],
+      "tags": { "highway": "motorway", "name": "B6 bypass" }
+    }
+  ]
+}

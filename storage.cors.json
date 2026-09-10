@@ -1,0 +1,13 @@
+[
+  {
+    "origin": [
+      "https://access-pafos.web.app",
+      "https://access-pafos.firebaseapp.com",
+      "http://localhost:5173",
+      "http://localhost"
+    ],
+    "method": ["GET", "HEAD"],
+    "responseHeader": ["Content-Type", "Content-Length", "Cache-Control", "ETag"],
+    "maxAgeSeconds": 3600
+  }
+]

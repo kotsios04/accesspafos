@@ -1,0 +1,46 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+*.log
+npm-debug.log*
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+database-debug.log*
+pubsub-debug.log*
+.DS_Store
+Thumbs.db
+coverage/
+.vite/
+.vitest/
+emulator-data/
+functions/src/shared/
+public/icons/generated/
+*.local
+!.env.example
+
+# --- credentials: never commit -------------------------------------------
+# Every .env variant, at any depth. The rules above covered `.env`,
+# `.env.local` and `.env.*.local` but not `functions/.env.access-pafos` - which
+# is exactly how the Firebase CLI stores per-project configuration, live keys
+# included. One unmatched pattern is all it takes.
+.env
+.env.*
+!.env.example
+
+secrets/
+!secrets/README.md
+service-account*.json
+*firebase-adminsdk*.json
+*-adminsdk-*.json
+*.pem
+*.p12
+_to_delete/
+dist-preview/
+
+# stray editor/build temp files
+*.tmp
+*.bak

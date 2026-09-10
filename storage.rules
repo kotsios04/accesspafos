@@ -1,0 +1,83 @@
+rules_version = '2';
+
+// ===========================================================================
+// AccessPafos AI - Cloud Storage security rules
+//
+// Citizen report photographs are NOT public. They may contain incidental
+// bystanders, vehicle plates or house numbers. They are readable only by the
+// uploader and by municipality reviewers. See docs/PRIVACY.md.
+// ===========================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return isSignedIn() && 'role' in request.auth.token
+        ? request.auth.token.role
+        : 'citizen';
+    }
+
+    function isReviewer() {
+      return role() in ['reviewer', 'municipality_admin', 'super_admin'];
+    }
+
+    function isMunicipalityAdmin() {
+      return role() in ['municipality_admin', 'super_admin'];
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/(jpeg|png|webp|heic|heif)');
+    }
+
+    function withinSizeLimit() {
+      return request.resource.size < 8 * 1024 * 1024; // MAX_REPORT_UPLOAD_MB
+    }
+
+    // ----------------------------------------------- citizen report photos
+    // Path: reports/{uid}/{reportId}/{fileName}
+    match /reports/{uid}/{reportId}/{fileName} {
+      allow read: if isReviewer() || (isSignedIn() && request.auth.uid == uid);
+      allow create: if isSignedIn()
+        && request.auth.uid == uid
+        && isImage()
+        && withinSizeLimit();
+      allow update: if false;
+      allow delete: if isMunicipalityAdmin();
+    }
+
+    // --------------------------------------------- municipal verification
+    match /verification/{segmentId}/{fileName} {
+      allow read: if isReviewer();
+      allow create: if isReviewer() && isImage() && withinSizeLimit();
+      allow update, delete: if isMunicipalityAdmin();
+    }
+
+    // ------------------------------------------ published public bundles
+    // Versioned GeoJSON accessibility bundles consumed by the public map.
+    // Written only by Cloud Functions (Admin SDK bypasses these rules).
+    match /public/bundles/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ------------------------------------------------------ admin exports
+    match /exports/{allPaths=**} {
+      allow read: if isMunicipalityAdmin();
+      allow write: if false;
+    }
+
+    // -------------------------------------------- temporary processing area
+    match /tmp/{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // ----------------------------------------------------- default: closed
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "accesspafos-functions",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "AccessPafos AI - Cloud Functions (2nd generation) backend",
+  "main": "src/index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "node ../scripts/sync-shared.mjs && node scripts/syntax-check.mjs",
+    "serve": "npm run build && firebase emulators:start --only functions,firestore,auth,storage",
+    "shell": "firebase functions:shell",
+    "logs": "firebase functions:log",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "@genkit-ai/google-genai": "^1.42.0",
+    "firebase-admin": "^14.3.0",
+    "firebase-functions": "^7.3.2",
+    "genkit": "^1.42.0",
+    "p-limit": "^7.3.2"
+  },
+  "devDependencies": {}
+}

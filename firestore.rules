@@ -1,0 +1,234 @@
+rules_version = '2';
+
+// ===========================================================================
+// AccessPafos AI - Firestore security rules
+//
+// Design principle: authoritative accessibility data is SERVER-OWNED.
+// No client, however authenticated, may write segments, assessments,
+// observations, priority scores, audit logs or roles. Those are written
+// exclusively by Cloud Functions using the Admin SDK, which bypasses rules.
+//
+// Roles live in Firebase Auth custom claims (request.auth.token.role) and
+// are set only by scripts/set-admin.js via the Admin SDK. There is
+// deliberately no client-writable role field anywhere in this database.
+// ===========================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------- helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return isSignedIn() && 'role' in request.auth.token
+        ? request.auth.token.role
+        : 'citizen';
+    }
+
+    function isReviewer() {
+      return role() in ['reviewer', 'municipality_admin', 'super_admin'];
+    }
+
+    function isMunicipalityAdmin() {
+      return role() in ['municipality_admin', 'super_admin'];
+    }
+
+    function isSuperAdmin() {
+      return role() == 'super_admin';
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Fields a client is never allowed to introduce or change.
+    function noPrivilegedFields(data) {
+      return !data.keys().hasAny([
+        'role', 'roles', 'claims', 'isAdmin', 'assessment',
+        'priorityScore', 'verifiedBy', 'verifiedAt', 'moderation'
+      ]);
+    }
+
+    function isValidLatLng(loc) {
+      return loc is latlng
+        || (loc is map
+            && loc.keys().hasAll(['lat', 'lng'])
+            && loc.lat is number && loc.lng is number
+            && loc.lat >= -90 && loc.lat <= 90
+            && loc.lng >= -180 && loc.lng <= 180);
+    }
+
+    // ------------------------------------------------------------------ users
+    // A user profile document holds preferences only. Roles are claims.
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isReviewer();
+      allow create: if isOwner(uid)
+        && noPrivilegedFields(request.resource.data)
+        && request.resource.data.keys().hasOnly([
+             'displayName', 'locale', 'mobilityProfile', 'units',
+             'preferVerifiedData', 'reducedMotion', 'analyticsOptIn',
+             'createdAt', 'updatedAt'
+           ]);
+      allow update: if isOwner(uid)
+        && noPrivilegedFields(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+             'displayName', 'locale', 'mobilityProfile', 'units',
+             'preferVerifiedData', 'reducedMotion', 'analyticsOptIn', 'updatedAt'
+           ]);
+      allow delete: if isOwner(uid);
+
+      // Personal collections - strictly owner-scoped.
+      //
+      // create/update and delete are separated deliberately: on a delete there
+      // is no `request.resource`, so evaluating `request.resource.data.keys()`
+      // would error and deny the operation. Writing `allow read, write` with a
+      // field check therefore makes deletion impossible - a subtle failure the
+      // rules tests catch.
+      match /savedPlaces/{placeId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && noPrivilegedFields(request.resource.data);
+        allow delete: if isOwner(uid);
+      }
+      match /savedRoutes/{routeId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && noPrivilegedFields(request.resource.data);
+        allow delete: if isOwner(uid);
+      }
+    }
+
+    // ---------------------------------------------------------------- regions
+    // Public read: the map needs to know which pilot regions exist.
+    match /regions/{regionId} {
+      allow read: if true;
+      allow write: if false; // server-only (ingestion jobs)
+    }
+
+    // --------------------------------------------------------------- segments
+    // Public read so the map and segment detail sheet work without login.
+    // Bulk map rendering uses the published GeoJSON bundle in Storage instead,
+    // to avoid thousands of document reads (see docs/ARCHITECTURE.md).
+    match /segments/{segmentId} {
+      allow read: if true;
+      allow write: if false; // server-only
+
+      match /assessmentHistory/{eventId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+
+    // ---------------------------------------------------- segment assessments
+    match /segmentAssessments/{segmentId} {
+      allow read: if true;
+      allow write: if false; // server-only (deterministic scoring engine)
+    }
+
+    // ----------------------------------------------------------- observations
+    // Raw evidence. Publicly readable for transparency EXCEPT citizen-sourced
+    // observations, which may contain a photo reference and are reviewer-only.
+    match /observations/{observationId} {
+      allow read: if resource.data.sourceType != 'citizen' || isReviewer();
+      allow write: if false; // server-only
+    }
+
+    // --------------------------------------------------------- citizen reports
+    // Citizens (including anonymous auth users) may create a report and read
+    // their own. Reviewers read everything. Nobody may set status client-side.
+    match /citizenReports/{reportId} {
+      allow read: if isReviewer() || isOwner(resource.data.reporterUid);
+
+      allow create: if isSignedIn()
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.category is string
+        && request.resource.data.category in [
+             'broken_pavement', 'missing_curb_ramp', 'steps', 'blocked_sidewalk',
+             'narrow_passage', 'surface_problem', 'crossing_problem',
+             'temporary_obstruction', 'other'
+           ]
+        && isValidLatLng(request.resource.data.location)
+        && (!('description' in request.resource.data)
+            || (request.resource.data.description is string
+                && request.resource.data.description.size() <= 600))
+        && request.resource.data.createdAt == request.time
+        && !request.resource.data.keys().hasAny([
+             'aiAnalysis', 'reviewedBy', 'reviewedAt', 'resolution',
+             'priorityScore', 'duplicateOf', 'assignedTo', 'verified'
+           ]);
+
+      // Reporters may only withdraw their own still-pending report.
+      allow update: if isOwner(resource.data.reporterUid)
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+        && request.resource.data.status == 'withdrawn';
+
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------- verification events
+    match /verificationEvents/{eventId} {
+      allow read: if isReviewer();
+      allow write: if false; // server-only, always audited
+    }
+
+    // -------------------------------------------------------- priority issues
+    match /priorityIssues/{issueId} {
+      allow read: if isReviewer();
+      allow write: if false; // server-only (deterministic priority engine)
+    }
+
+    // ------------------------------------------------------------------- jobs
+    match /ingestionJobs/{jobId} {
+      allow read: if isMunicipalityAdmin();
+      allow write: if false; // server-only
+    }
+    match /analysisJobs/{jobId} {
+      allow read: if isMunicipalityAdmin();
+      allow write: if false; // server-only
+    }
+
+    // ------------------------------------------------------- validation sets
+    // Human ground-truth labels used to measure AI agreement honestly.
+    match /validationSamples/{sampleId} {
+      allow read: if isReviewer();
+      allow write: if false; // server-only (written through a callable that audits)
+    }
+
+    // ----------------------------------------------------------------- config
+    // A single public document exposes non-secret runtime configuration
+    // (thresholds, versions, demo flag). Everything else is admin-only.
+    match /config/public {
+      allow read: if true;
+      allow write: if false; // server-only
+    }
+    match /config/{docId} {
+      allow read: if isMunicipalityAdmin();
+      allow write: if false; // server-only (audited callable)
+    }
+
+    // ------------------------------------------------------------ audit logs
+    match /auditLogs/{logId} {
+      allow read: if isSuperAdmin();
+      allow write: if false; // append-only, server-only
+    }
+
+    // ---------------------------------------------------------- AI cost ledger
+    match /aiUsage/{docId} {
+      allow read: if isMunicipalityAdmin();
+      allow write: if false;
+    }
+
+    // --------------------------------------------------------- routing graphs
+    match /routingGraphs/{graphId} {
+      allow read: if isMunicipalityAdmin();
+      allow write: if false;
+    }
+
+    // -------------------------------------------------------- default: closed
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
